@@ -73,8 +73,8 @@
   .alt a{color:var(--primary);font-weight:700;text-decoration:none}
   .secure{display:flex;justify-content:center;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-top:10px}
   .secure svg{width:13px;height:13px;fill:var(--muted)}
-  gmp-place-autocomplete{width:100%;display:block;--gmp-mat-color-surface:#FAFAFA;--gmp-mat-color-on-surface:#1a1a1a;--gmp-mat-color-primary:#7B072A;font-family:Poppins,sans-serif}
-  gmp-place-autocomplete::part(input){padding:14px;border:1px solid var(--line);font:15px Poppins,sans-serif;background:#FAFAFA;border-radius:0}
+  gmp-place-autocomplete{width:100%;display:block;color:#1a1a1a;color-scheme:light;--gmp-mat-color-surface:#FAFAFA;--gmp-mat-color-on-surface:#1a1a1a;--gmp-mat-color-on-surface-variant:#555;--gmp-mat-color-primary:#7B072A;font-family:Poppins,sans-serif}
+  gmp-place-autocomplete::part(input){padding:14px;border:1px solid var(--line);font:15px Poppins,sans-serif;background:#FAFAFA;border-radius:0;color:#1a1a1a;-webkit-text-fill-color:#1a1a1a;opacity:1}
   .err{color:#C0392B;font-size:13px;margin-top:8px;display:none}
 
   /* franja de beneficios (igual a "Envío gratis / Servicio 100% online") */
@@ -134,14 +134,35 @@
   .fab svg{width:32px;height:32px;fill:#fff}
 
   @media(max-width:900px){
-    .nav{height:88px}.logo img{width:64px;height:64px}.logo span{display:none}
-    .hero{margin:12px 12px 0}.hero-inner{grid-template-columns:1fr;gap:26px;padding:36px 22px}
-    h1{font-size:38px}.checks{grid-template-columns:1fr}
-    .strip{margin:12px 12px 0}.strip-inner{grid-template-columns:1fr 1fr}.benefit:nth-child(2){border-right:0}.benefit:nth-child(-n+2){border-bottom:1px solid var(--line)}
-    .grid3,.plans{grid-template-columns:1fr}h3{font-size:28px}section{padding:44px 0}
-    .card{padding:22px}.row{grid-template-columns:1fr}
-    .final{margin:0 12px}footer .container{grid-template-columns:1fr}
+    .topbar{font-size:12px;padding:7px 10px}
+    .nav{height:72px}.logo img{width:56px;height:56px}.logo span{display:none}
+    .hero{margin:10px 10px 0}
+    .hero-inner{display:flex;flex-direction:column;gap:18px;padding:18px 14px 22px}
+    .hero-inner .card{order:-1;padding:18px 16px}
+    .card h2{font-size:20px}
+    .tag{margin-bottom:10px;font-size:10px}
+    h1{font-size:28px;margin-bottom:8px}
+    .lead{font-size:14px;margin-bottom:12px}
+    .checks{grid-template-columns:1fr;gap:6px}
+    .checks li:nth-child(n+3){display:none}
+    .strip{margin:10px 10px 0}.strip-inner{grid-template-columns:1fr 1fr}
+    .benefit{padding:12px 10px;gap:8px}.benefit svg{width:26px;height:26px}.benefit b{font-size:12px}.benefit span{font-size:11px}
+    .benefit:nth-child(2){border-right:0}.benefit:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    section{padding:32px 0}
+    h3{font-size:24px}.sub{font-size:14px;margin-bottom:20px}
+    .grid3{grid-template-columns:1fr;gap:10px}.tile{padding:16px 18px}.tile .n{margin-bottom:4px}.tile b{font-size:15px}.tile p{font-size:13px}
+    .plans{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+    .plan{flex:0 0 78%;scroll-snap-align:start;min-height:0;padding:20px}
+    .plan .speed{font-size:40px}
+    .faq{margin-top:16px}summary{font-size:14px}
+    .final{margin:0 10px}.final .btn{max-width:100%}
+    footer{padding:28px 0 90px}footer .container{grid-template-columns:1fr}
+    /* barra fija inferior */
+    .fab{display:none}
+    .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(0,0,0,.12)}
+    .sticky-cta .btn{margin:0;padding:14px;font-size:14px}
   }
+  @media(min-width:901px){.sticky-cta{display:none}}
 </style>
 </head>
 <body>
@@ -206,7 +227,7 @@
     <h3 data-es="Tres pasos y listo" data-en="Three steps and you're done">Tres pasos y listo</h3>
     <p class="sub" data-es="Nos encargamos de todo el proceso para que no tengas que llamar a cada compañía." data-en="We handle the whole process so you don't have to call every provider.">Nos encargamos de todo el proceso para que no tengas que llamar a cada compañía.</p>
     <div class="grid3">
-      <div class="tile"><div class="n">01</div><b data-es="Nos escribes" data-en="You message us">Nos escribes</b><p data-es="Tu nombre y tu código postal por WhatsApp. Toma 30 segundos." data-en="Your name and ZIP on WhatsApp. It takes 30 seconds.">Tu nombre y tu código postal por WhatsApp. Toma 30 segundos.</p></div>
+      <div class="tile"><div class="n">01</div><b data-es="Nos escribes" data-en="You message us">Nos escribes</b><p data-es="Tu dirección por WhatsApp. Toma 30 segundos." data-en="Your address on WhatsApp. It takes 30 seconds.">Tu dirección por WhatsApp. Toma 30 segundos.</p></div>
       <div class="tile"><div class="n">02</div><b data-es="Verificamos tu dirección" data-en="We check your address">Verificamos tu dirección</b><p data-es="Revisamos todas las opciones que llegan a tu casa y te decimos cuál conviene, con precio claro." data-en="We review every option that reaches your home and tell you which fits best, with clear pricing.">Revisamos todas las opciones que llegan a tu casa y te decimos cuál conviene, con precio claro.</p></div>
       <div class="tile"><div class="n">03</div><b data-es="Te instalan" data-en="You get connected">Te instalan</b><p data-es="Coordinamos la instalación y te acompañamos hasta que estés conectado." data-en="We schedule the installation and stay with you until you're online.">Coordinamos la instalación y te acompañamos hasta que estés conectado.</p></div>
     </div>
@@ -265,6 +286,8 @@
 
 <a class="fab" href="#" onclick="return goWA()" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg></a>
 
+<div class="sticky-cta"><a class="btn" href="#" onclick="return goWA()"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg><span data-es="Verificar por WhatsApp" data-en="Check on WhatsApp">Verificar por WhatsApp</span></a></div>
+
 <script>
   // ===== CONFIGURACIÓN (lo único que hay que tocar) =====
   var WA_NUMBER = "14078859405";   // WhatsApp que recibe los leads (UdiSpot)
@@ -288,7 +311,7 @@
   // ===== GOOGLE MAPS (autocompletado de dirección) =====
   // 1) Crear clave en console.cloud.google.com > APIs > "Places API (New)" + "Maps JavaScript API"
   // 2) Restringirla al sitio internet-udi.com (Websites: *.internet-udi.com/* e internet-udi.com/*)  3) Pegarla aquí:
-  var MAPS_KEY = "AIzaSyBaGbJSgOSjh_7kPGsEvFEqKh_NkrUkouI"
+  var MAPS_KEY = "PEGAR_CLAVE_AQUI";
   var ADDR = ""; // dirección estandarizada elegida de la lista
   if (MAPS_KEY && MAPS_KEY.indexOf("PEGAR")<0) {
     var sc=document.createElement("script");
@@ -316,6 +339,7 @@
   }
   function goWA(){
     var a = getAddr();
+    if(!a && event && event.currentTarget && event.currentTarget.closest && event.currentTarget.closest(".sticky-cta")){ document.getElementById("form").scrollIntoView({behavior:"smooth"}); var el=document.getElementById("dir"); if(el&&el.focus) setTimeout(function(){el.focus()},400); return false; }
     var apt = document.getElementById("apt").value.trim();
     var z = document.getElementById("zip").value.trim();
     var src = (q.get("gclid")||q.get("utm_source")) ? " [Google]" : "";
@@ -335,6 +359,11 @@
     window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg), "_blank");
     return false;
   }
+  (function(){
+    var st=document.querySelector(".sticky-cta"), fm=document.getElementById("form");
+    if(st&&fm&&"IntersectionObserver" in window){ st.style.display="none";
+      new IntersectionObserver(function(e){ st.style.display = (e[0].isIntersecting||window.innerWidth>900) ? "none" : "block"; },{threshold:0.15}).observe(fm); }
+  })();
   (function(){
     var p = q.get("lang"), b = (navigator.language||"es").toLowerCase();
     setLang(p==="en" || (!p && b.indexOf("en")===0) ? "en" : "es");
