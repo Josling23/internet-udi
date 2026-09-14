@@ -8,19 +8,27 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
 fbq('init','371516287277518');
 fbq('track','PageView');
 
-/* Bloquea WhatsApp si no hay direccion, y marca Lead cuando si la hay */
+/* Direccion actual: usa getAddr() de index.html (entiende el autocompletado de Google);
+   si no existe, lee el campo #dir directo */
+function _udiAddr(){
+  try { if (typeof getAddr === 'function') return String(getAddr() || '').trim(); } catch (x) {}
+  var el = document.getElementById('dir');
+  return el ? String(el.value || '').trim() : '';
+}
+
+/* Bloquea CUALQUIER boton de WhatsApp (Verificar, Obtener, burbuja, barra fija) si no hay
+   direccion, y marca Lead en Meta cuando si la hay. Corre en captura: antes del onclick */
 document.addEventListener('click', function(e){
   var t = e.target;
   if (!t || !t.closest) return;
-  var a = t.closest('a.btn, a.fab');
+  var a = t.closest('a[onclick*="goWA"], a.btn, a.fab');
   if (!a) return;
 
-  var dirEl = document.getElementById('dir');
-  var dir = dirEl ? String(dirEl.value || '').trim() : '';
+  var dir = _udiAddr();
   var err = document.getElementById('err');
   var esES = (document.documentElement.lang || 'es').indexOf('en') !== 0;
 
-  if (dir.length < 5) {
+  if (dir.length < 6) {
     e.preventDefault();
     e.stopPropagation();
     if (err) {
@@ -34,7 +42,7 @@ document.addEventListener('click', function(e){
     }
     var wrap = document.getElementById('dir-wrap');
     if (wrap && wrap.scrollIntoView) { wrap.scrollIntoView({behavior:'smooth', block:'center'}); }
-    try { if (dirEl && dirEl.focus) dirEl.focus(); } catch (x) {}
+    try { var d = document.getElementById('dir'); if (d && d.focus) setTimeout(function(){ d.focus(); }, 400); } catch (x) {}
     return false;
   }
 
