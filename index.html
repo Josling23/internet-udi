@@ -298,10 +298,16 @@
 <script>
   // ===== CONFIGURACIÓN (lo único que hay que tocar) =====
   var WA_NUMBER = "14076402011";   // WhatsApp que recibe los leads (Douglas)
+  // Opcional: en config.js poner  window.WA_NUMBERS = ["1407...","1407..."];  y cada lead
+  // se reparte AL AZAR entre esos números (para probar varios agentes a la vez).
   // Se puede sobreescribir por URL: /internet?wa=14075551234
   // =====================================================
   var lang = "es";
   var q = new URLSearchParams(location.search);
+  if (Array.isArray(window.WA_NUMBERS) && window.WA_NUMBERS.length) {
+    var _ok = window.WA_NUMBERS.filter(function(n){ return /^\d{10,15}$/.test(String(n)); });
+    if (_ok.length) WA_NUMBER = String(_ok[Math.floor(Math.random()*_ok.length)]);
+  }
   if (/^\d{10,15}$/.test(q.get("wa")||"")) WA_NUMBER = q.get("wa");
 
   function setLang(l){
@@ -344,24 +350,24 @@
     var typed = el && el.value ? el.value.trim() : (el && el.shadowRoot && el.shadowRoot.querySelector("input") ? el.shadowRoot.querySelector("input").value.trim() : "");
     return ADDR || typed;
   }
+  function needAddr(){
+    // Ningún botón manda WhatsApp sin dirección: lleva al formulario y muestra el aviso
+    var err=document.getElementById("err");
+    if(err){ err.textContent = lang==="es" ? "Escribe tu dirección para poder verificar." : "Enter your address so we can check."; err.style.display="block"; }
+    document.getElementById("form").scrollIntoView({behavior:"smooth"});
+    var el=document.getElementById("dir"); if(el&&el.focus) setTimeout(function(){el.focus()},400);
+    return false;
+  }
   function goWA(){
     var a = getAddr();
-    if(!a && event && event.currentTarget && event.currentTarget.closest && event.currentTarget.closest(".sticky-cta")){ document.getElementById("form").scrollIntoView({behavior:"smooth"}); var el=document.getElementById("dir"); if(el&&el.focus) setTimeout(function(){el.focus()},400); return false; }
+    if(!a || a.length<6) return needAddr();
+    var err=document.getElementById("err"); if(err){ err.textContent=""; err.style.display="none"; }
     var apt = document.getElementById("apt").value.trim();
     var z = document.getElementById("zip").value.trim();
     var src = (q.get("gclid")||q.get("utm_source")) ? " [Google]" : "";
-    var msg;
-    if (a) {
-      msg = lang==="es"
-        ? "Hola, quiero verificar qué internet hay disponible en: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src
-        : "Hi, I want to check what internet is available at: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src;
-    } else if (/^\d{5}$/.test(z)) {
-      msg = lang==="es" ? "Hola, quiero saber qué internet hay disponible en el ZIP "+z+"."+src
-                        : "Hi, I want to know what internet is available at ZIP "+z+"."+src;
-    } else {
-      msg = lang==="es" ? "Hola, quiero saber qué internet hay disponible en mi zona."+src
-                        : "Hi, I want to know what internet is available in my area."+src;
-    }
+    var msg = lang==="es"
+      ? "Hola, quiero verificar qué internet hay disponible en: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src
+      : "Hi, I want to check what internet is available at: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src;
     track();
     window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg), "_blank");
     return false;
