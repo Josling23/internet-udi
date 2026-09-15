@@ -351,17 +351,27 @@
     var typed = el && el.value ? el.value.trim() : (el && el.shadowRoot && el.shadowRoot.querySelector("input") ? el.shadowRoot.querySelector("input").value.trim() : "");
     return ADDR || typed;
   }
+  // Solo direcciones de EE.UU.: elegida de la lista de Google (solo sugiere EE.UU.) o, si la escribió a mano, con ZIP de 5 dígitos
+  function addrOk(){
+    var a=getAddr(); if(!a || a.length<6) return false;
+    if(ADDR) return true;
+    var z=(document.getElementById("zip").value||"").trim();
+    return /^\d{5}$/.test(z);
+  }
   function needAddr(){
-    // Ningún botón manda WhatsApp sin dirección: lleva al formulario y muestra el aviso
+    // Ningún botón manda WhatsApp sin dirección de EE.UU.: lleva al formulario y muestra el aviso
     var err=document.getElementById("err");
-    if(err){ err.textContent = lang==="es" ? "Escribe tu dirección para poder verificar." : "Enter your address so we can check."; err.style.display="block"; }
+    var a=getAddr(), msg;
+    if(!a || a.length<6) msg = lang==="es" ? "Escribe tu dirección para poder verificar." : "Enter your address so we can check.";
+    else msg = lang==="es" ? "Elige tu dirección en la lista o escribe tu código postal de 5 dígitos (solo Estados Unidos)." : "Pick your address from the list or enter your 5-digit ZIP code (United States only).";
+    if(err){ err.textContent = msg; err.style.display="block"; }
     document.getElementById("form").scrollIntoView({behavior:"smooth"});
     var el=document.getElementById("dir"); if(el&&el.focus) setTimeout(function(){el.focus()},400);
     return false;
   }
   function goWA(){
     var a = getAddr();
-    if(!a || a.length<6) return needAddr();
+    if(!addrOk()) return needAddr();
     var err=document.getElementById("err"); if(err){ err.textContent=""; err.style.display="none"; }
     var apt = document.getElementById("apt").value.trim();
     var z = document.getElementById("zip").value.trim();
