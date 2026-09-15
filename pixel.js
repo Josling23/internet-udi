@@ -28,13 +28,14 @@ document.addEventListener('click', function(e){
   var err = document.getElementById('err');
   var esES = (document.documentElement.lang || 'es').indexOf('en') !== 0;
 
-  if (dir.length < 6) {
+  var ok = (typeof addrOk === 'function') ? addrOk() : (dir.length >= 6);
+  if (!ok) {
     e.preventDefault();
     e.stopPropagation();
     if (err) {
-      err.textContent = esES
-        ? 'Escribe tu direccion para poder verificar que internet llega a tu casa.'
-        : 'Enter your address so we can check what internet is available at your home.';
+      err.textContent = (dir.length < 6)
+        ? (esES ? 'Escribe tu direccion para poder verificar que internet llega a tu casa.' : 'Enter your address so we can check what internet is available at your home.')
+        : (esES ? 'Elige tu direccion en la lista o escribe tu codigo postal de 5 digitos (solo Estados Unidos).' : 'Pick your address from the list or enter your 5-digit ZIP code (United States only).');
       err.style.display = 'block';
       err.style.color = '#c0392b';
       err.style.fontWeight = '600';
