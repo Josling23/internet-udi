@@ -69,6 +69,10 @@
   input{width:100%;padding:14px;border:1px solid var(--line);font:15px Poppins,sans-serif;background:#FAFAFA;transition:.15s;border-radius:0}
   input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(123,7,42,.12)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice button{padding:14px;border:1px solid var(--line);background:#FAFAFA;font:600 14px Poppins,sans-serif;color:var(--dark);cursor:pointer;border-radius:0;transition:.15s}
+  .choice button:hover{border-color:var(--primary)}
+  .choice button.on{background:var(--primary);border-color:var(--primary);color:#fff}
   .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;padding:17px;font:700 15px Poppins,sans-serif;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;color:#fff;background:var(--wa);text-decoration:none;margin-top:18px;transition:.15s;border-radius:0}
   .btn:hover{background:var(--wa2)}
   .btn svg{width:22px;height:22px;fill:#fff}
@@ -204,8 +208,13 @@
       <div class="hint" data-es="Sin compromiso. Respuesta por WhatsApp en minutos." data-en="No commitment. WhatsApp reply within minutes.">Sin compromiso. Respuesta por WhatsApp en minutos.</div>
       <label for="dir" data-es="Dirección de tu casa" data-en="Your home address">Dirección de tu casa</label>
       <div id="dir-wrap"><input id="dir" type="text" autocomplete="off" placeholder="123 Main St, Orlando, FL"></div>
+      <label data-es="¿Es casa o apartamento?" data-en="Is it a house or an apartment?">¿Es casa o apartamento?</label>
+      <div class="choice">
+        <button type="button" id="tipo-casa" onclick="setTipo('casa')" data-es="Casa" data-en="House">Casa</button>
+        <button type="button" id="tipo-apto" onclick="setTipo('apto')" data-es="Apartamento" data-en="Apartment">Apartamento</button>
+      </div>
       <div class="row" style="margin-top:2px">
-        <div><label for="apt" data-es="Apto / Unidad (opcional)" data-en="Apt / Unit (optional)">Apto / Unidad (opcional)</label><input id="apt" type="text" placeholder="Apt 4B"></div>
+        <div id="apt-wrap" style="display:none"><label for="apt" data-es="Número de apto o unidad" data-en="Apt or unit number">Número de apto o unidad</label><input id="apt" type="text" placeholder="Apt 4B"></div>
         <div><label for="zip" data-es="Código postal" data-en="ZIP code">Código postal</label><input id="zip" type="tel" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="32835"></div>
       </div>
       <div class="hint" style="margin:8px 0 0;font-size:12px" data-es="Empieza a escribir y elige tu dirección en la lista para que la verificación sea exacta." data-en="Start typing and pick your address from the list so the check is exact.">Empieza a escribir y elige tu dirección en la lista para que la verificación sea exacta.</div>
@@ -351,6 +360,30 @@
     var typed = el && el.value ? el.value.trim() : (el && el.shadowRoot && el.shadowRoot.querySelector("input") ? el.shadowRoot.querySelector("input").value.trim() : "");
     return ADDR || typed;
   }
+  // ===== Casa o apartamento (para que la direccion llegue completa al vendedor) =====
+  var TIPO = "";   // "casa" | "apto"
+  function setTipo(t){
+    TIPO = t;
+    document.getElementById("tipo-casa").className = (t==="casa") ? "on" : "";
+    document.getElementById("tipo-apto").className = (t==="apto") ? "on" : "";
+    var w = document.getElementById("apt-wrap");
+    var row = w.parentElement;
+    if(t==="apto"){
+      w.style.display = "block";
+      row.style.gridTemplateColumns = "1fr 1fr";
+      setTimeout(function(){ var a=document.getElementById("apt"); if(a&&a.focus) a.focus(); },150);
+    } else {
+      w.style.display = "none";
+      row.style.gridTemplateColumns = "1fr";
+      document.getElementById("apt").value = "";
+    }
+    var err=document.getElementById("err"); if(err){ err.textContent=""; err.style.display="none"; }
+  }
+  function tipoOk(){
+    if(TIPO==="casa") return true;
+    if(TIPO==="apto") return (document.getElementById("apt").value||"").trim().length>0;
+    return false;
+  }
   // Solo direcciones de EE.UU.: elegida de la lista de Google (solo sugiere EE.UU.) o, si la escribió a mano, con ZIP de 5 dígitos
   function addrOk(){
     var a=getAddr(); if(!a || a.length<6) return false;
@@ -363,22 +396,28 @@
     var err=document.getElementById("err");
     var a=getAddr(), msg;
     if(!a || a.length<6) msg = lang==="es" ? "Escribe tu dirección para poder verificar." : "Enter your address so we can check.";
-    else msg = lang==="es" ? "Elige tu dirección en la lista o escribe tu código postal de 5 dígitos (solo Estados Unidos)." : "Pick your address from the list or enter your 5-digit ZIP code (United States only).";
+    else if(!addrOk()) msg = lang==="es" ? "Elige tu dirección en la lista o escribe tu código postal de 5 dígitos (solo Estados Unidos)." : "Pick your address from the list or enter your 5-digit ZIP code (United States only).";
+    else if(!TIPO) msg = lang==="es" ? "Indica si es casa o apartamento." : "Tell us if it is a house or an apartment.";
+    else msg = lang==="es" ? "Escribe el número de tu apartamento o unidad." : "Enter your apartment or unit number.";
     if(err){ err.textContent = msg; err.style.display="block"; }
     document.getElementById("form").scrollIntoView({behavior:"smooth"});
-    var el=document.getElementById("dir"); if(el&&el.focus) setTimeout(function(){el.focus()},400);
+    var el = (!addrOk()) ? document.getElementById("dir") : (TIPO==="apto" ? document.getElementById("apt") : null);
+    if(el&&el.focus) setTimeout(function(){el.focus()},400);
     return false;
   }
   function goWA(){
     var a = getAddr();
-    if(!addrOk()) return needAddr();
+    if(!addrOk() || !tipoOk()) return needAddr();
     var err=document.getElementById("err"); if(err){ err.textContent=""; err.style.display="none"; }
     var apt = document.getElementById("apt").value.trim();
     var z = document.getElementById("zip").value.trim();
     var src = (q.get("gclid")||q.get("utm_source")) ? " [Google]" : "";
+    var unidad = lang==="es"
+      ? (TIPO==="apto" ? ", "+apt : " (casa, sin número de apto)")
+      : (TIPO==="apto" ? ", "+apt : " (house, no apt number)");
     var msg = lang==="es"
-      ? "Hola, quiero verificar qué internet hay disponible en: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src
-      : "Hi, I want to check what internet is available at: "+a+(apt?", "+apt:"")+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src;
+      ? "Hola, quiero verificar qué internet hay disponible en: "+a+unidad+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src
+      : "Hi, I want to check what internet is available at: "+a+unidad+(z&&a.indexOf(z)<0?" (ZIP "+z+")":"")+"."+src;
     track();
     window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg), "_blank");
     return false;
